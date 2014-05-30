@@ -14,7 +14,7 @@ hdd=`system_profiler SPSerialATADataType | grep USERDATA | cut -d: -f1`
 
 if 
 ls /Volumes/USERDATA ; then
-# Get the UUID of the Volume RLUSERS
+# Get the UUID of the Volume USERDATA
 usersUUID=`diskutil info /Volumes/RLUSERS | grep Volume\ UUID: | awk '{print $3}'`
 else
 # Get the UUID of /Users
@@ -27,13 +27,13 @@ fi
 # Check to see if its a MacPro and fstab exists
 if  [ "${file}" ] && [ "${model}" ] && [ "${hdd}" ] ; then
 
-# Move the Shared folder to RLUSERS
+# Move the Shared folder to USERDATA
 mv /Users/Shared/ /Volumes/"${hdd}"/Shared/
 
 # Pause 10 seconds
 sleep 10
 
-# Make sure the volume RLUSERS is hidden
+# Make sure the volume USERDATA is hidden
 /usr/bin/SetFile -a V /Volumes/"${hdd}"
 /usr/bin/SetFile -a V /Users
 
@@ -56,5 +56,5 @@ rm -rf /Library/LaunchDaemons/com.userdata.fstab.Launchd.plist
 fi
 
 # Remove the script
-rm -rf /Library/Management/Scripts/fstab_RLUSERS.sh
+rm -rf /Library/Management/Scripts/fstab_USERDATA.sh
 exit 0
