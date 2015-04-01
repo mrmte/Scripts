@@ -8,3 +8,7 @@ su - "${user}" -c 'defaults write com.apple.finder QLEnableTextSelection -bool T
 
 # Add to the new user template
 defaults write /System/Library/User\ Template/English.lproj/Library/Preferences/com.apple.finder QLEnableTextSelection -bool true
+
+
+# Relaunch the finder
+su - "${user}" -c 'killall Finder'
