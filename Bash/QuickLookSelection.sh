@@ -11,4 +11,4 @@ su - "${user}" -c 'defaults write com.apple.finder QLEnableTextSelection -bool T
 
 
 # Relaunch the finder
-'killall Finder'
+killall Finder
