@@ -28,6 +28,7 @@ DESTINATION_PATH='XXX'
 ### DO NOT MODIFY BELOW THIS LINE ###
 
 expect <<END
+set timeout -1
 
 spawn rsync -avrpogz --delete --exclude=.Trashes/ --exclude=.Spotlight-v100/ -e ssh $USER@$SERVER_SOURCE:$PATH_SOURCE $DESTINATION_PATH
 
