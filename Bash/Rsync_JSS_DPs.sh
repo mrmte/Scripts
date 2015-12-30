@@ -29,7 +29,7 @@ DESTINATION_PATH='XXX'
 
 expect <<END
 
-spawn rsync -avrpogz --delete --exclude=.Trash/ --exclude=.Spotlight-v100/ -e ssh $USER@$SERVER_SOURCE:$PATH_SOURCE $DESTINATION_PATH
+spawn rsync -avrpogz --delete --exclude=.Trashes/ --exclude=.Spotlight-v100/ -e ssh $USER@$SERVER_SOURCE:$PATH_SOURCE $DESTINATION_PATH
 
 expect "Password:"
 send "$PASSWORD\r"
