@@ -8,7 +8,7 @@
 
 # customise the variables for your environment
 
-### ENVIRONMENT VAIABLES ###
+### ENVIRONMENT VARIABLES ###
 
 # User to connect with
 USER='XXX'
