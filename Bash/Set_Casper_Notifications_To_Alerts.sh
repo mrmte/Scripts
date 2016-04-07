@@ -17,4 +17,4 @@ fi
 
 # Set Casper Management Notifications to Alerts
 sudo su "${user}" -c '/usr/local/bin/NCutil.py -a alerts com.jamfsoftware.Management-Action'
-Status API Training Shop Blog About
+
