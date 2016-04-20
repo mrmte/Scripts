@@ -10,7 +10,7 @@ user=`ls -l /dev/console | cut -d " " -f4`
 
 # unload if it already exist
 if [ -f /Library/LaunchDaemons/com.sn.caffeinate.Launchd.plist ]; then
-su "${user}" -c 'launchctl unload /Library/LaunchDaemons/com.sn.caffeinate.Launchd.plist'
+launchctl unload /Library/LaunchDaemons/com.sn.caffeinate.Launchd.plist
 fi
 
 # Check to see if the binary exists and if so create the launch agent
