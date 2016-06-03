@@ -1,0 +1,18 @@
+#!/bin/bash
+
+# Check to see if the file exists 
+if [ -f /Library/Application\ Support/Macromedia/mms.cfg ]; then
+
+# check to see the file contents
+query1=`cat /Library/Application\ Support/Macromedia/mms.cfg | grep AutoUpdateDisable | cut -d '=' -f2`
+query2=`cat /Library/Application\ Support/Macromedia/mms.cfg | grep SilentAutoUpdateEnable | cut -d '=' -f2`
+
+# If the settings are not correct disable updates
+if [[ "$query1" != 1 ]] && [[ "$query2" != 0 ]]; then
+echo "Disabling Adobe Flash Updates"
+## Set Updates to "Never Check"
+
+echo "AutoUpdateDisable=1
+SilentAutoUpdateEnable=0" > /Library/Application\ Support/Macromedia/mms.cfg
+fi
+fi
