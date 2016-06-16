@@ -14,7 +14,7 @@ end try
 delay 5
 
 try
-	set radiourl to "http://somafm.com/popup/?groovesalad"
+	set radiourl to "http://somafm.com/player/#/now-playing/groovesalad"
 	
 	-- Quit Safari web browser if it is running
 	
