@@ -41,7 +41,7 @@ LAUNCH_DAEMON=""
 #			                   #
 ##########################
 
-QUICK_ADD="/private/var/db/QuickAdd.pkg"
+QUICK_ADD="" # path to your QuickAdd.pkg"
 CHECKSUM="" # md5 -q "path to your QuickAdd.pkg"
 LAUNCH_DAEMON="/Library/LaunchDaemons/com.sn.jamfpro.recheck.Launchd.plist"
 GOOGLE="8.8.8.8"
