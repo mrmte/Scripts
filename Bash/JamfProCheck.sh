@@ -107,9 +107,6 @@ function CheckInternet() {
         logger "There is no internet connection"
 	fi
 
-}
-
-
 # No internet and no launch daemon. The launch daemon is created
 	if [ ! -f $LAUNCH_DAEMON ] && [[ $INTERNET = "NO" ]]; then
 echo "<?xml version="1.0" encoding="UTF-8"?>
