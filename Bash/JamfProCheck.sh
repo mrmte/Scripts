@@ -97,16 +97,18 @@ function JamfBinaryPresentCheck() {
 #																                                                                                                   #
 ####################################################################################################################################
 
+# Try and ping Google
 function CheckInternet() {
-	nc -z $GOOGLE 443  >/dev/null 2>&1
-        	online=$?
-        if [ $online -eq 0 ]; then
-            INTERNET="YES"
-		logger "There is an internet connection"
-        else
-            INTERNET="NO"
-		logger "There is no internet connection" 
-        fi
+        if ping -c 1 $GOOGLE >> /dev/null 2>&1; then
+        INTERNET="YES"
+        logger "There is an internet connection"
+	else
+        INTERNET="NO"
+        logger "There is no internet connection"
+	fi
+
+}
+
 
 # No internet and no launch daemon. The launch daemon is created
 	if [ ! -f $LAUNCH_DAEMON ] && [[ $INTERNET = "NO" ]]; then
