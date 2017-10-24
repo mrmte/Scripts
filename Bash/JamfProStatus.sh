@@ -17,14 +17,16 @@ DESC="PJamfPro"
 
 
   
+# Try and ping Google
 function CheckInternet() {
-	nc -z $GOOGLE 443  >/dev/null 2>&1
-	online=$?
-	if [ $online -eq 0 ]; then
-	INTERNET="YES"
-	fi
+        if ping -c 1 $GOOGLE >> /dev/null 2>&1; then
+        INTERNET="YES"
+        else
+        INTERNET="NO"
+        fi
 
 }
+
 
 
 # Carryout CheckJSSConnection
