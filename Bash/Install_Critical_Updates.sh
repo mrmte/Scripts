@@ -16,7 +16,7 @@ softwareupdate -i $getsecupd
 fi
 }
 
-function OSUpdates
+function OSUpdates() {
 
 getosupd=$(softwareupdate -l | grep "* macOS Update" | cut -d '*' -f2 | sed -e 's/^[ \t]*//')
 if [[ $getosupd = "No new software available." ]]; then
