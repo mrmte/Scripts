@@ -1,29 +1,35 @@
 #!/bin/bash
 
-# For OS updates use OSXUpd
-# For Security updates use SecUpd
+# This is designed to carry out critical updates first being 
+# 1. Security Updates
+# 2. OS Updates
+# 3. Everything else
 
-# Get any OS updates
-getosupd=$(softwareupdate -l | grep OSXUpd | awk 'NR==1 {print $2}')
-
+function SecurityUpdates() {
 # Get any security updates
-getsecupd=$(softwareupdate -l | grep SecUpd | awk 'NR==1 {print $2}')
+getsecupd=$(softwareupdate -l | grep "* Security Update" | cut -d '*' -f2 | sed -e 's/^[ \t]*//')
 
-
-### DO NOT MODIFY BELOW THIS LINE ###
-
-if  [[ $getsecupd = "No new software available." ]] && [[ $getosupd = "No new software available." ]]; then
-
-echo "no os or security updates to apply"
-
-exit 1
-
+if  [[ $getsecupd = "No new software available." ]]; then
+echo "No Security Updates are available"
 else
-
-# Install OS updates
-softwareupdate -i $getosupd
-
-# Install Security updates
 softwareupdate -i $getsecupd
-
 fi
+}
+
+function OSUpdates
+
+getosupd=$(softwareupdate -l | grep "* macOS Update" | cut -d '*' -f2 | sed -e 's/^[ \t]*//')
+if [[ $getosupd = "No new software available." ]]; then
+echo "No OS Updates are available"
+else
+softwareupdate -i $getosupd
+fi
+}
+
+# critical updates first
+function SecurityUpdates
+function OSUpdates
+
+# carry out a full sofware update
+softwareupdate -i -a
+exit 0
