@@ -24,9 +24,9 @@ GOOGLE="8.8.8.8"
 TEMPFILE1=/private/tmp/CheckJSSConnection1.txt
 TEMPFILE2=/private/tmp/CheckJSSConnection1.txt
 
-CURRENT_JAMF_URL=$6   #https://snc.jamfcloud.com
-NEW_JAMF_URL=$7        #https://sntest.jamfcloud.com
-INVITATION=$8 #prod 245275332365704026254116788530323977295 #test 117936034112835101536984529133863829665
+CURRENT_JAMF_URL=$6   #https://xxx.jamfcloud.com
+NEW_JAMF_URL=$7        #https://xxx.jamfcloud.com
+INVITATION=$8 
 
 TMP_IMAGE="/tmp/uamdm_ss.png"
 CocoaDialog="/usr/local/bin/cocoaDialog.app/Contents/MacOS/cocoaDialog"
