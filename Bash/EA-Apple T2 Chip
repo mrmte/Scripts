@@ -1,0 +1,8 @@
+#!/bin/bash
+  
+# EA DESIGNED FOR IDENTIFYING MACHINES WITH APPLE T2 CHIP
+query=$(system_profiler SPiBridgeDataType | grep "Model Name:" | cut -d ':' -f2 | sed -e 's/^[[:space:]]*//')
+if [ "$query" = "Apple T2 chip" ]; then
+        echo "<result>YES</result>"
+fi
+exit 0
