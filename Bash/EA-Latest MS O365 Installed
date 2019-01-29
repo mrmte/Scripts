@@ -1,0 +1,72 @@
+#!/bin/bash
+
+## This is used to see if Installed O365 is Mojave compatible seeing as jamf broke patch management in Jamf 10.8
+
+# variables
+
+App1="Microsoft Outlook.app"
+App2="Microsoft Word.app"
+App3="Microsoft Excel.app"
+App4="Microsoft PowerPoint.app"
+App5="Microsoft OneNote.app"
+
+# clearing variables
+App1_Latest=""
+App2_Latest=""
+App3_Latest=""
+App4_Latest=""
+App5_Latest=""
+
+# Define main URL (https://macadmins.software)
+MAINURL="https://macadmins.software/latest.xml"
+
+# Get latest version number
+FULL_VERSION=$(curl -s https://macadmins.software/latest.xml |  xmllint --xpath '//latest/o365/text()' - | tr -d '.')
+
+function checkLatest() {
+    echo "$FULL_VERSION"
+    if [ "$?" != "0" ]; then
+        echo "<result>Unable to Check</result>"
+    fi
+  }
+
+checkLatest
+
+
+# Set result if O365 apps are not installed because the don’t exist 
+if [ ! -e /Applications/"$App1" ] && [ ! -e /Applications/"$App2" ] && [ ! -e /Applications/"$App3" ] && [ ! -e /Applications/"$App4" ] && [ ! -e /Applications/"$App5" ]; then
+echo "<result>Not Installed</result>"
+fi
+
+if [ -e /Applications/"$App1" ]; then
+InstalledO365_App1=$(defaults read /Applications/"$App1"/Contents/Info.plist CFBundleShortVersionString | tr -d ".")
+fi
+
+# App2 Check
+if [ -e /Applications/"$App2" ]; then
+InstalledO365_App2=$(defaults read /Applications/"$App2"/Contents/Info.plist CFBundleShortVersionString | tr -d ".")
+fi
+
+# App3 Check
+if [ -e /Applications/"$App3" ]; then
+InstalledO365_App3=$(defaults read /Applications/"$App3"/Contents/Info.plist CFBundleShortVersionString | tr -d ".")
+fi
+
+# App 4 Check
+if [ -e /Applications/"$App4" ]; then
+InstalledO365_App4=$(defaults read /Applications/"$App4"/Contents/Info.plist CFBundleShortVersionString | tr -d ".")
+fi
+
+# App 5 Check
+if [ -e /Applications/"$App5" ]; then
+InstalledO365_App5=$(defaults read /Applications/"$App5"/Contents/Info.plist CFBundleShortVersionString | tr -d ".")
+fi
+
+# Final result, if none of the apps came back not compatible then we are good
+if [ "$InstalledO365_App1" -ge "$FULL_VERSION" ] && [ "$InstalledO365_App2" -ge "$FULL_VERSION" ] && [ "$InstalledO365_App3" -ge "$FULL_VERSION" ] && [ "$InstalledO365_App4" -ge "$FULL_VERSION" ] && [ "$InstalledO365_App5" -ge "$FULL_VERSION" ]; then
+echo "<result>Latest Installed</result>"
+else
+echo "<result>Not Latest Installed</result>"
+fi
+
+exit 0
