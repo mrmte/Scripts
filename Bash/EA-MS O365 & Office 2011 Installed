@@ -1,0 +1,13 @@
+#!/bin/bash
+
+App1="Microsoft Outlook.app"
+App2="Microsoft Word.app"
+App3="Microsoft Excel.app"
+App4="Microsoft PowerPoint.app"
+App5="Microsoft OneNote.app"
+
+if [ -e /Applications/"$App1" ] && [ -e /Applications/"$App2" ] && [ -e /Applications/"$App3" ] && [ -e /Applications/"$App4" ] && [ -e /Applications/"$App5" ] && [ -e /Applications/"Microsoft Office 2011"/*.app ]; then
+echo "<result>Both Installed</result>"
+fi
+
+exit 0
