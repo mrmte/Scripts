@@ -11,10 +11,7 @@ App4="Microsoft PowerPoint.app"
 
 
 # clearing variables
-App1_Compatible=""
-App2_Compatible=""
-App3_Compatible=""
-App4_Compatible=""
+Compatible=""
 
 
 # Minimum version 16.17 is Mojave compatible
@@ -27,35 +24,52 @@ fi
 
 if [ -e /Applications/"$App1" ]; then
 	InstalledO365_App1=$(defaults read /Applications/"$App1"/Contents/Info.plist CFBundleShortVersionString | tr -d ".")
+	if [[ "$InstalledO365_App1" -ge "$MinimumVersion" ]]; then
+		Compatible="YES"
+		else
+		Compatible="NO"
+	fi
 fi
 
  
 # App2 Check
 if [ -e /Applications/"$App2" ]; then
 	InstalledO365_App2=$(defaults read /Applications/"$App2"/Contents/Info.plist CFBundleShortVersionString | tr -d ".")
+	if [[ "$InstalledO365_App2" -ge "$MinimumVersion" ]]; then
+		Compatible="YES"
+		else
+		Compatible="NO"
+	fi
 fi
 
 
 # App3 Check
 if [ -e /Applications/"$App3" ]; then
 	InstalledO365_App3=$(defaults read /Applications/"$App3"/Contents/Info.plist CFBundleShortVersionString | tr -d ".")
+	if [[ "$InstalledO365_App3" -ge "$MinimumVersion" ]]; then
+		Compatible="YES"
+		else
+		Compatible="NO"
+	fi
 fi
 
 
 # App 4 Check
 if [ -e /Applications/"$App4" ]; then
 	InstalledO365_App4=$(defaults read /Applications/"$App4"/Contents/Info.plist CFBundleShortVersionString | tr -d ".")
+	if [[ "$InstalledO365_App4" -ge "$MinimumVersion" ]]; then
+		Compatible="YES"
+		else
+		Compatible="NO"
+	fi
 fi
 
-
-
-
-
-# Final result, if none of the apps came back not compatible then we are good
-if [[ "$InstalledO365_App1" -ge "$MinimumVersion" ]] && [[ "$InstalledO365_App2" -ge "$MinimumVersion" ]] && [[ "$InstalledO365_App3" -ge "$MinimumVersion" ]] && [[ "$InstalledO365_App4" -ge "$MinimumVersion" ]]; then
-echo "<result>Compatible</result>"
-else
-echo "<result>Not Compatible</result>"
+# Final Check
+if [[ "$Compatible" = "YES" ]]; then
+		echo "<result>Compatible</result>"
+		else
+		echo "<result>Not Compatible</result>"
 fi
+
 
 exit 0
