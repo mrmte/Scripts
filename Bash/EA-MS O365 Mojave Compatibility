@@ -7,7 +7,7 @@
 App1="Microsoft Outlook.app"
 App2="Microsoft Word.app"
 App3="Microsoft Excel.app"
-App4="Microsoft PowerPoint.app"
+
 
 
 # clearing variables
@@ -24,6 +24,7 @@ fi
 
 if [ -e /Applications/"$App1" ]; then
 	InstalledO365_App1=$(defaults read /Applications/"$App1"/Contents/Info.plist CFBundleShortVersionString | tr -d ".")
+	echo "Outlook is $InstalledO365_App1"
 	if [[ "$InstalledO365_App1" -ge "$MinimumVersion" ]]; then
 		Compatible="YES"
 		else
@@ -35,6 +36,7 @@ fi
 # App2 Check
 if [ -e /Applications/"$App2" ]; then
 	InstalledO365_App2=$(defaults read /Applications/"$App2"/Contents/Info.plist CFBundleShortVersionString | tr -d ".")
+	echo "Word is $InstalledO365_App2"
 	if [[ "$InstalledO365_App2" -ge "$MinimumVersion" ]]; then
 		Compatible="YES"
 		else
@@ -46,6 +48,7 @@ fi
 # App3 Check
 if [ -e /Applications/"$App3" ]; then
 	InstalledO365_App3=$(defaults read /Applications/"$App3"/Contents/Info.plist CFBundleShortVersionString | tr -d ".")
+	echo "Excel is $InstalledO365_App3"
 	if [[ "$InstalledO365_App3" -ge "$MinimumVersion" ]]; then
 		Compatible="YES"
 		else
@@ -54,15 +57,6 @@ if [ -e /Applications/"$App3" ]; then
 fi
 
 
-# App 4 Check
-if [ -e /Applications/"$App4" ]; then
-	InstalledO365_App4=$(defaults read /Applications/"$App4"/Contents/Info.plist CFBundleShortVersionString | tr -d ".")
-	if [[ "$InstalledO365_App4" -ge "$MinimumVersion" ]]; then
-		Compatible="YES"
-		else
-		Compatible="NO"
-	fi
-fi
 
 # Final Check
 if [[ "$Compatible" = "YES" ]]; then
