@@ -48,9 +48,7 @@ consoleuser=$(ls -l /dev/console | cut -d " " -f4)
 OS=$(/usr/bin/defaults read /System/Library/CoreServices/SystemVersion ProductVersion | awk '{print substr($1,1,4)}')
 
 # Work SSID
-WorkSSID=NOW-Corporate
-
-HomeSSID=Lucky5
+WorkSSID=YOUR_SSID
 
 # Authentication to use
 Auth=WPA2E
