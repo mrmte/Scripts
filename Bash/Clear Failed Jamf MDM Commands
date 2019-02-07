@@ -58,8 +58,8 @@ function DecryptString() {
 }
 
 # Encrypted Username & password we will use for the api
-USERNAME=$(DecryptString $4 'cafe4bfe29687227' 'c3aeb1f91e48a7d28ea2acca') 
-PASSWORD=$(DecryptString $5 '4697359aa84ddf85' '3439372e6c1386b5cdee42d4')
+USERNAME=$(DecryptString $4 'XXXXXXX' 'XXXX') 
+PASSWORD=$(DecryptString $5 'XXXXXX' 'XXXXX')
 
 ####### SCRIPT
 
