@@ -35,19 +35,19 @@ echo "<result>Not Installed</result>"
 fi
 
 if [ -e /Applications/"$App1" ]; then
-InstalledO365_App1=$(defaults read /Applications/"$App1"/Contents/Info.plist CFBundleShortVersionString | tr -d ".")
+InstalledO365_App1=$(defaults read /Applications/"Microsoft Outlook.app"/Contents/Info.plist CFBundleShortVersionString | cut -d '.' -f1 -f2 | tr -d '.')
 echo "$App1 is $InstalledO365_App1"
 fi
 
 # App2 Check
 if [ -e /Applications/"$App2" ]; then
-InstalledO365_App2=$(defaults read /Applications/"$App2"/Contents/Info.plist CFBundleShortVersionString | tr -d ".")
+InstalledO365_App2=$(defaults read /Applications/"Microsoft Outlook.app"/Contents/Info.plist CFBundleShortVersionString | cut -d '.' -f1 -f2 | tr -d '.')
 echo "$App2 is $InstalledO365_App2"
 fi
 
 # App3 Check
 if [ -e /Applications/"$App3" ]; then
-InstalledO365_App3=$(defaults read /Applications/"$App3"/Contents/Info.plist CFBundleShortVersionString | tr -d ".")
+InstalledO365_App3=$(defaults read /Applications/"Microsoft Outlook.app"/Contents/Info.plist CFBundleShortVersionString | cut -d '.' -f1 -f2 | tr -d '.')
 echo "$App3 is $InstalledO365_App3"
 
 fi
@@ -55,21 +55,28 @@ fi
 # App 4 Check
 if [ -e /Applications/"$App4" ]; then
 
-InstalledO365_App4=$(defaults read /Applications/"$App4"/Contents/Info.plist CFBundleShortVersionString | tr -d ".")
+InstalledO365_App4=$(defaults read /Applications/"Microsoft Outlook.app"/Contents/Info.plist CFBundleShortVersionString | cut -d '.' -f1 -f2 | tr -d '.')
 echo "$App4 is $InstalledO365_App4"
 fi
 
 # App 5 Check
 if [ -e /Applications/"$App5" ]; then
-InstalledO365_App5=$(defaults read /Applications/"$App5"/Contents/Info.plist CFBundleShortVersionString | tr -d ".")
+InstalledO365_App5=$(defaults read /Applications/"Microsoft Outlook.app"/Contents/Info.plist CFBundleShortVersionString | cut -d '.' -f1 -f2 | tr -d '.')
 echo "$App5 is $InstalledO365_App5"
 fi
 
 # Final result, if none of the apps came back not compatible then we are good
+# This is the standalone full O365 version
 if [ "$InstalledO365_App1" == "$FULL_VERSION" ] && [ "$InstalledO365_App2" == "$FULL_VERSION" ] && [ "$InstalledO365_App3" == "$FULL_VERSION" ] && [ "$InstalledO365_App4" == "$FULL_VERSION" ] && [ "$InstalledO365_App5" == "$FULL_VERSION" ]; then
-echo "<result>Latest Installed</result>"
-else
-echo "<result>Not Latest Installed</result>"
+	echo "<result>Latest Installed</result>"
+
+# This is if someone has initialised insider fast version and has installed that somehow
+elif [ "$InstalledO365_App1" -gt "$FULL_VERSION" ] && [ "$InstalledO365_App2" -gt "$FULL_VERSION" ] && [ "$InstalledO365_App3" -gt "$FULL_VERSION" ] && [ "$InstalledO365_App4" -gt "$FULL_VERSION" ] && [ "$InstalledO365_App5" -gt "$FULL_VERSION" ]; then
+	echo "<result>Higher Version Installed</result>"
+
+# This is the lower than the standalone full version Microsoft release 
+elif [ "$InstalledO365_App1" -lt "$FULL_VERSION" ] && [ "$InstalledO365_App2" -lt "$FULL_VERSION" ] && [ "$InstalledO365_App3" -lt "$FULL_VERSION" ] && [ "$InstalledO365_App4" -lt "$FULL_VERSION" ] && [ "$InstalledO365_App5" -lt "$FULL_VERSION" ]; then
+	echo "<result>Not Latest Installed</result>"
 fi
 
 exit 0
