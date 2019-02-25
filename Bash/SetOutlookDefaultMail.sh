@@ -1,6 +1,8 @@
 
 #!/bin/bash
 
+# This script is designed to run as root. 
+# duti is used to then set Outlook if installed as thr default mail client for the logged in user.
 
 # Get the currently logged in user
 user=`ls -l /dev/console | cut -d " " -f4`
