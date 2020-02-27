@@ -1,54 +1,46 @@
 #!/bin/bash
 
-########################## SET SYSTEM TIME  ##################################################
-#
-# Written by Tim Kimpton
-#
-# using information from https://jamfnation.jamfsoftware.com/discussion.html?id=5336
-#
-# If the machine is 5 minutes out of the kdc the machine will not bind to the domain.
-#
-# This script does the folling to ensure the time is correct
-#
-# 1. Unload the launch daemon used for location services
-#
-# 2. Get the hardware UUID of the machine and put it in the location services db
-#
-# 3. Enable location services
-#
-# 4. Correct permissions on the database file used for location services
-#
-# 5. Set the time zone to update the time automatically
-#
-# 6. Set the network time to on
-#
-# For information see https://jamfnation.jamfsoftware.com/discussion.html?id=5336
-###############################################################################################
+BUILD="1"
 
-######################### ENVIRONMENT VARIABLES #######################
+# Harware UUID
+UUID=$(/usr/sbin/system_profiler SPHardwareDataType | grep "Hardware UUID" | cut -c22-57)
 
-# Get the Hardware UUID from system profiler
-uuid=$(/usr/sbin/system_profiler SPHardwareDataType | grep "Hardware UUID" | cut -c22-57)
+# Get ip address
+MY_IP=$(curl -L -s --max-time 10 http://checkip.dyndns.org | egrep -o -m 1 '([[:digit:]]{1,3}\.){3}[[:digit:]]{1,3}')
 
-####################### DO NOT MODIFY BELOW THIS LINE #################
 
-# Unload the launch daemon
-/bin/launchctl unload /System/Library/LaunchDaemons/com.apple.locationd.plist
+TIMEZONE=$(curl -L -s --max-time 10 http://ip-api.com/csv/?fields=timezone,/$MY_IP)
 
-# Write the UUID to the hidden plist file and initialise it
-/usr/bin/defaults write /var/db/locationd/Library/Preferences/ByHost/com.apple.locationd."$uuid" LocationServicesEnabled -int 1
+function enableLocationServices() {
 
-# Enable Location Services
-/usr/bin/defaults write /var/db/locationd/Library/Preferences/ByHost/com.apple.locationd.notbackedup."$uuid" LocationServicesEnabled -int 1
+# enabling location services this requires a restart because of SIP
+/usr/bin/defaults write /var/db/locationd/Library/Preferences/ByHost/com.apple.locationd LocationServicesEnabled -int 1
+/usr/bin/defaults write /var/db/locationd/Library/Preferences/ByHost/com.apple.locationd.$UUID LocationServicesEnabled -int 1
 
-# Make sure the permissions on the database file is correct
-/usr/sbin/chown -R _locationd:_locationd /var/db/locationd
-/bin/launchctl load /System/Library/LaunchDaemons/com.apple.locationd.plist
+# configure automatic timezone
+/usr/bin/defaults write /Library/Preferences/com.apple.timezone.auto Active -bool YES
+/usr/bin/defaults write /private/var/db/timed/Library/Preferences/com.apple.timed.plist TMAutomaticTimeOnlyEnabled -bool YES
+/usr/bin/defaults write /private/var/db/timed/Library/Preferences/com.apple.timed.plist TMAutomaticTimeZoneEnabled -bool YES
 
-# Set time zone to update automatically
-/usr/bin/defaults write /Library/Preferences/com.apple.timezone.auto Active -bool true
+/usr/sbin/systemsetup -setusingnetworktime on
+/usr/sbin/systemsetup -gettimezone
+/usr/sbin/systemsetup -getnetworktimeserver
+return 0
 
-# Set network time to on
-/usr/sbin/systemsetup -setusingnetworktime on > /dev/null 2>&1
+}
+
+
+### MAIN ###
+
+echo "Build is $BUILD"
+
+# now set the time
+if [[ "$TIMEZONE" != "" ]]; then
+			echo "setting timezone to $TIMEZONE"
+			systemsetup -settimezone $TIMEZONE
+fi
+
+# enable location Services, requires a restart to reflect in the OS due to SIP
+enableLocationServices
 
 exit 0
