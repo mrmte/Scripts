@@ -191,7 +191,7 @@ function setScreenSaverSettings() {
 			plutil -insert 'Type' -string 'individual' -o - -)"
 	fi
 	defaults write $loggedInUserHome/Library/Preferences/"${PlistName}" SetCorpScreenSaver -bool Yes
-	chown $loggedInUserHome/Library/Preferences/"${PlistName}".plist
+	chown $loggedInUse $loggedInUserHome/Library/Preferences/"${PlistName}".plist
 	makeScreenSaverDirectory
 }
 
