@@ -190,7 +190,8 @@ function setScreenSaverSettings() {
 			plutil -insert 'Idle.LastUse' -date "${currentRFC3339UTCDate}" -o - - |
 			plutil -insert 'Type' -string 'individual' -o - -)"
 	fi
-	su "$loggedInUser" -l -c 'defaults write ~/Library/Preferences/$PlistName SetCorpScreenSaver -bool Yes'
+	defaults write $loggedInUserHome/Library/Preferences/"${PlistName}" SetCorpScreenSaver -bool Yes
+	chown $loggedInUserHome/Library/Preferences/"${PlistName}".plist
 	makeScreenSaverDirectory
 }
 
