@@ -191,7 +191,10 @@ function setScreenSaverSettings() {
 			plutil -insert 'Type' -string 'individual' -o - -)"
 	fi
 	defaults write $loggedInUserHome/Library/Preferences/"${PlistName}" SetCorpScreenSaver -bool Yes
-	chown $loggedInUse $loggedInUserHome/Library/Preferences/"${PlistName}".plist
+	chown $loggedInUser $loggedInUserHome/Library/Preferences/"${PlistName}".plist
+ 	rm $loggedInUserHome/Library/Preferences/ByHost/com.apple.screensaver*.plist > /dev/null 2>&1
+	rm $loggedInUserHome/Library/Preferences/ByHost/com.apple.ScreenSaverPhotoChooser*.plist > /dev/null 2>&1
+	rm $loggedInUserHome/Library/Preferences/ByHost/com.apple.ScreenSaver.iLifeSlideShows*.plist > /dev/null 2>&1
 	makeScreenSaverDirectory
 }
 
