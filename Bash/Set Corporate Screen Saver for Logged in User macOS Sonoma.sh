@@ -24,7 +24,8 @@
 
 loggedInUser=$(/usr/bin/stat -f%Su /dev/console)
 loggedInUserHome=$(dscl . read /Users/"$loggedInUser" NFSHomeDirectory | awk '{print $2}')
-PathToScreenSaver="/Library/Screen Savers/XXX.saver"
+PathToScreenSaver="/Library/Screen Savers/Corporate ScreenSaver.saver"
+ScreenSaveModuleName="Corporate ScreenSaver"
 PlistName="com.corp.screensaver"
 
 
@@ -103,7 +104,13 @@ function checkmacOSVersion() {
     elif [[ "${macOSMainProductVersion}" -ge "${desiredmacOSVersion}" ]]; then
         checkUser
     else
-        echo "$(date) - macOS is on version $macOSFullProductVersion; do not run."
+        echo "$(date) - macOS is on version $macOSFullProductVersion; do not run. running old style settings..."
+    rm $loggedInUserHome/Library/Preferences/ByHost/com.apple.screensaver*.plist > /dev/null 2>&1
+	rm $loggedInUserHome/Library/Preferences/ByHost/com.apple.ScreenSaverPhotoChooser*.plist > /dev/null 2>&1
+	rm $loggedInUserHome/Library/Preferences/ByHost/com.apple.ScreenSaver.iLifeSlideShows*.plist > /dev/null 2>&1
+
+	su "$loggedInUser" -l -c "defaults write $PlistName SetCorpScreenSaver -bool Yes"
+	su "$loggedInUser" -l -c "defaults -currentHost write com.apple.screensaver moduleDict -dict moduleName '$ScreenSaveModuleName' path '$PathToScreenSaver' type 0"
         exitCode='0'
 		finalize
     fi
@@ -190,11 +197,13 @@ function setScreenSaverSettings() {
 			plutil -insert 'Idle.LastUse' -date "${currentRFC3339UTCDate}" -o - - |
 			plutil -insert 'Type' -string 'individual' -o - -)"
 	fi
-	defaults write $loggedInUserHome/Library/Preferences/"${PlistName}" SetCorpScreenSaver -bool Yes
-	chown $loggedInUser $loggedInUserHome/Library/Preferences/"${PlistName}".plist
- 	rm $loggedInUserHome/Library/Preferences/ByHost/com.apple.screensaver*.plist > /dev/null 2>&1
+	
+	rm $loggedInUserHome/Library/Preferences/ByHost/com.apple.screensaver*.plist > /dev/null 2>&1
 	rm $loggedInUserHome/Library/Preferences/ByHost/com.apple.ScreenSaverPhotoChooser*.plist > /dev/null 2>&1
 	rm $loggedInUserHome/Library/Preferences/ByHost/com.apple.ScreenSaver.iLifeSlideShows*.plist > /dev/null 2>&1
+
+	su "$loggedInUser" -l -c "defaults write $PlistName SetCorpScreenSaver -bool Yes"
+	su "$loggedInUser" -l -c "defaults -currentHost write com.apple.screensaver moduleDict -dict moduleName '$ScreenSaveModuleName' path '$PathToScreenSaver' type 0"
 	makeScreenSaverDirectory
 }
 
