@@ -1,33 +1,43 @@
 #!/bin/bash
 
-# Title:	Set Screen Saver and Keep User's Wallpaper
-# Version:	2024.04.29
-# Author:	https://github.com/itjimbo
-# Modified: Tim Kimpton
+:<<DOC
+ Author:	https://github.com/itjimbo
+ Modified: Tim Kimpton
 
-# Notes:	This script is based on scripts provided by user Pico (https://github.com/PicoMitchell) on the Mac Admins Slack channel and also from here
-# https://github.com/itjimbo/macOS-Screen-Saver-and-Wallpaper/blob/main/Set%20Screen%20Saver%20and%20Keep%20User's%20Wallpaper.sh
+ Notes:	This script is based on scripts provided by user Pico (https://github.com/PicoMitchell) on the Mac Admins Slack channel and also from here
+ https://github.com/itjimbo/macOS-Screen-Saver-and-Wallpaper/blob/main/Set%20Screen%20Saver%20and%20Keep%20User's%20Wallpaper.sh
 
-# Improvements:
-# 1. waits for a logged in user
-# 2. is designed to run as a policy in jamf pro, once per user per computer
-# 3. if the policy log is flushed by accident and this script runs again, then a plist is checked in the users preferences to see if it has 
-# 	 already run and exits silently
+ Improvements:
+ 1. Can be used below macOS Sonoma. Tested on macOS Ventura and Sonoma
+ 1. waits for a logged in user
+ 2. is designed to run as a policy in jamf pro, once per user per computer
+ 3. if the policy log is flushed by accident and this script runs again, then a plist is checked in the users preferences to see if it has 
+ 	 already run and exits silently
 
-# Usage:
-# 1. create the screensaver in /Library/Screen Savers/*.saver
-# 2. create a pkg with the .saver and deploy via jamf policy
-# 3. create an EA in Jamf pro to capture the screen saver for smart group scoping
-# 3. create a policy in jamf to run at start up and re-occuring check-in once per user per computer scoped to the smart group
+ Usage:
+ 1. create the screensaver in /Library/Screen Savers/*.saver
+ 2. create a pkg with the .saver and deploy via jamf policy
+ 3. create an EA in Jamf pro to capture the screen saver for smart group scoping
+ 4. create a policy in jamf to run at start up and re-occuring check-in once per user per computer scoped to the smart group
 
+Example variables in the policy
+$4 - PathToScreenSaver="/Library/Screen Savers/Corporate ScreenSaver.saver"
+$5 - ScreenSaveModuleName="Corporate ScreenSaver"
+$6 - PlistName="com.corp.screensaver"
+$7 - Get the base64 after it has been set as follows and put in $7 of the policy in Jamf Pro (plutil -extract AllSpacesAndDisplays xml1 -o - "/Users/${loggedInUser}/Library/Application Support/com.apple.wallpaper/Store/Index.plist" | awk '/<data>/,/<\/data>/' | xargs | tr -d " " | tr "<" "\n" | tail -2 | head -1 | cut -c6)
+DOC
 
-
+### Variables ###
 loggedInUser=$(/usr/bin/stat -f%Su /dev/console)
 loggedInUserHome=$(dscl . read /Users/"$loggedInUser" NFSHomeDirectory | awk '{print $2}')
-PathToScreenSaver="/Library/Screen Savers/Corporate ScreenSaver.saver"
-ScreenSaveModuleName="Corporate ScreenSaver"
-PlistName="com.corp.screensaver"
+screenSaverBase64=`printf "'$7'"`
+PathToScreenSaver="$4"
+ScreenSaveModuleName="$5"
+PlistName="$6"
+screenSaverBase64=`printf "'$7'"`
 
+
+### Functions ####
 
 # This is to wait for an active user
 function waitForLoggedInUser() {
@@ -58,17 +68,14 @@ while [ "$KEEP_LOOPING" = "true" ]; do
 function getDefinedVariables() {
 	# Insert desired macOS minimum version for script to run. Default is 14 for macOS 14 Sonoma and later.
 	desiredmacOSVersion='14'
-
-	# Insert the output of the screenSaverBase64 variable from the 'Get Screen Saver and Wallpaper Settings' script.
-	screenSaverBase64='YnBsaXN0MDDRAQJWbW9kdWxl0QMEWHJlbGF0aXZlXxBKZmlsZTovLy9MaWJyYXJ5L1NjcmVlbiUyMFNhdmVycy9TZXJ2aWNlTm93JTIwQ29ycG9yYXRlJTIwU2NyZWVuU2F2ZXIuc2F2ZXIICxIVHgAAAAAAAAEBAAAAAAAAAAUAAAAAAAAAAAAAAAAAAABr'
-
+	
 	# Do not edit beyond this point...
 	getStarterVariables
 }
 
 function getStarterVariables() {
 	# Do not edit these variables.
-	echo "$(date) - Script will only run on macOS version ${desiredmacOSVersion} or later (macOS ${desiredmacOSVersion} - Present)."
+	echo "$(date) - Script by default is looking for macOS version ${desiredmacOSVersion} or later by default (macOS ${desiredmacOSVersion} - Present)."
 	echo "$(date) - screenSaverBase64: ${screenSaverBase64}"
 	currentRFC3339UTCDate="$(date -u '+%FT%TZ')"
 	echo "$(date) - currentRFC3339UTCDate: ${currentRFC3339UTCDate}"
@@ -104,13 +111,12 @@ function checkmacOSVersion() {
     elif [[ "${macOSMainProductVersion}" -ge "${desiredmacOSVersion}" ]]; then
         checkUser
     else
-        echo "$(date) - macOS is on version $macOSFullProductVersion; do not run. running old style settings..."
-    rm $loggedInUserHome/Library/Preferences/ByHost/com.apple.screensaver*.plist > /dev/null 2>&1
+        echo "$(date) - macOS is on version $macOSFullProductVersion; running legacy settings to set the screensaver"
 	rm $loggedInUserHome/Library/Preferences/ByHost/com.apple.ScreenSaverPhotoChooser*.plist > /dev/null 2>&1
 	rm $loggedInUserHome/Library/Preferences/ByHost/com.apple.ScreenSaver.iLifeSlideShows*.plist > /dev/null 2>&1
-
-	su "$loggedInUser" -l -c "defaults write $PlistName SetCorpScreenSaver -bool Yes"
-	su "$loggedInUser" -l -c "defaults -currentHost write com.apple.screensaver moduleDict -dict moduleName '$ScreenSaveModuleName' path '$PathToScreenSaver' type 0"
+	sleep 1
+	su "$loggedInUser" -l -c "defaults -currentHost write com.apple.screensaver moduleDict -dict moduleName '${ScreenSaveModuleName}' path '${PathToScreenSaver}' type 0"
+        killall cfprefsd
         exitCode='0'
 		finalize
     fi
@@ -198,12 +204,12 @@ function setScreenSaverSettings() {
 			plutil -insert 'Type' -string 'individual' -o - -)"
 	fi
 	
-	rm $loggedInUserHome/Library/Preferences/ByHost/com.apple.screensaver*.plist > /dev/null 2>&1
 	rm $loggedInUserHome/Library/Preferences/ByHost/com.apple.ScreenSaverPhotoChooser*.plist > /dev/null 2>&1
 	rm $loggedInUserHome/Library/Preferences/ByHost/com.apple.ScreenSaver.iLifeSlideShows*.plist > /dev/null 2>&1
 
 	su "$loggedInUser" -l -c "defaults write $PlistName SetCorpScreenSaver -bool Yes"
-	su "$loggedInUser" -l -c "defaults -currentHost write com.apple.screensaver moduleDict -dict moduleName '$ScreenSaveModuleName' path '$PathToScreenSaver' type 0"
+	su "$loggedInUser" -l -c "defaults -currentHost write com.apple.screensaver moduleDict -dict moduleName '${ScreenSaveModuleName}' path '${PathToScreenSaver}' type 0"
+    killall cfprefsd
 	makeScreenSaverDirectory
 }
 
@@ -240,11 +246,34 @@ function finalize() {
         exit 0
     else
         echo "$(date) - Abort mission..."
-        exit 1
+        exit 5
     fi    
 }
 
 #### MAIN ######
+
+if [ "$4" = "" ]; then
+    echo "Paramater 4 was empty"
+    exit 1
+fi
+
+if [ "$5" = "" ]; then
+    echo "Paramater 5 was empty"
+    exit 2
+fi
+
+if [ "$6" = "" ]; then
+    echo "Paramater 6 was empty"
+    exit 3
+fi
+
+
+if [ "$7" = "" ]; then
+    echo "Paramater 7 was empty"
+    exit 4
+fi
+
+
 waitForLoggedInUser
 
 if [ -e "$PathToScreenSaver" ]; then
