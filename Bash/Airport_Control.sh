@@ -50,7 +50,7 @@ ethernetInterface=$(networksetup -listallhardwareports | grep 'en' | grep -v "${
 ##
 # Define non-wireless IP status.
 ethernetIP=$(for i1 in ${ethernetInterface};do
-  echo $(ifconfig "${i1}" | grep 'inet' | grep -v '127.0.|169.254.' | awk '{ print $2 }')
+  echo $(ipconfig getifadd "${i1}" | grep -v '169.254.|127.0.')
 done)
 ##
 
